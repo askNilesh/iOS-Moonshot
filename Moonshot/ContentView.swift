@@ -8,14 +8,60 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    let astronauts : [String : Astronaut] = Bundle.main.decode("astronauts.json")
+    let missions: [Mission] = Bundle.main.decode("missions.json")
+    
+    let columns = [
+        GridItem(.adaptive(minimum: 150))
+    ]
+    @State var showGrid = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        
+        NavigationView{
+            
+            ScrollView {
+                
+                if showGrid {
+                    LazyVGrid(columns: columns){
+                        
+                        ForEach(missions) { mission in
+                            
+                            NavigationLink {
+                                MissionView(mission: mission, astronauts: astronauts)
+                            } label: {
+                                GridViewItem(mission: mission)
+                                
+                            }
+                        }
+                    }
+                    .padding([.horizontal,.bottom])
+                } else
+                {
+                    ForEach(missions) { mission in
+                        
+                        NavigationLink {
+                            MissionView(mission: mission, astronauts: astronauts)
+                        } label: {
+                            ListViewItem(mission: mission)
+                            
+                        }
+                    }
+                    .padding([.horizontal,.bottom])
+                }
+                
+            }
+            .navigationTitle("Moonshot")
+            .background(.darkBackground)
+            .preferredColorScheme(.dark)
+            .toolbar {
+                Button {
+                    showGrid.toggle()
+                } label: {
+                    Text("Switch Layout")
+                }
+            }
         }
-        .padding()
     }
 }
 
